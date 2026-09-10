@@ -33,4 +33,11 @@ class CourierFactory extends Factory
             'joined_at' => fake()->date(),
         ];
     }
+
+    public function agungBudiSantoso(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'name' => 'Agung Budi Santoso',
+        ]);
+    }
 }

@@ -176,6 +176,44 @@ curl "http://127.0.0.1:8000/api/couriers?search=budi%20agung&level=2,3&sort=-joi
 
 Sort yang tidak didukung kembali ke `name` ascending. Level di luar rentang 1-5 diabaikan.
 
+### Hasil Pengujian Search
+
+Pengujian manual menggunakan endpoint sesuai domain Laravel Valet:
+
+```bash
+curl "http://gradin-technical-test.test/api/couriers?search=budi%20agung"
+```
+
+Hasil pengujian berhasil mengembalikan `1` courier yang namanya mengandung seluruh keyword pencarian:
+
+```json
+{
+	"data": [
+		{
+			"id": 1,
+			"name": "Agung Budi Santoso",
+			"phone_number": "082346458120",
+			"email": "bernhard.maud@example.net",
+			"address": "94980 Howell Lake\nO'Reillyshire, SC 59382-2087",
+			"level": 4,
+			"status": "inactive",
+			"joined_at": "2022-03-21",
+			"created_at": "2026-09-10T03:00:29.000000Z",
+			"updated_at": "2026-09-10T03:00:29.000000Z"
+		}
+	],
+	"meta": {
+		"current_page": 1,
+		"last_page": 1,
+		"per_page": 15,
+		"to": 1,
+		"total": 1
+	}
+}
+```
+
+Hasil tersebut membuktikan bahwa pencarian multi-word `budi agung` dapat menemukan nama `Agung Budi Santoso`.
+
 ### Buat Courier
 
 ```http
@@ -278,3 +316,29 @@ composer test
 ```
 
 Feature test mencakup pagination, sorting, pencarian multi-word, filter beberapa level, CRUD, validasi field wajib, dan response `404`.
+
+## Pemenuhan Brief Technical Test
+
+| Brief | Implementasi |
+| --- | --- |
+| Project Laravel baru | Project menggunakan Laravel 13 dengan struktur Laravel standar. |
+| Model dan migration courier | Model `Courier` dan migration tabel `couriers` tersedia, dengan field identitas, kontak, level, status, tanggal bergabung, dan timestamps. |
+| Level courier 1-5 | Field `level` divalidasi antara 1 sampai 5 dan disimpan sebagai unsigned tiny integer. |
+| CRUD courier | `apiResource` menyediakan endpoint `index`, `store`, `show`, `update`, dan `destroy`. |
+| Pagination | `GET /api/couriers` menggunakan pagination, default 15 data per halaman. |
+| Sorting default nama | Data diurutkan berdasarkan `name` ascending secara default. |
+| Override sorting tanggal daftar | Gunakan `sort=joined_at` atau `sort=-joined_at`. |
+| Search multi-word | Gunakan `search=budi%20agung`; setiap keyword dicocokkan pada nama courier. |
+| Filter level | Gunakan `level=2,3` untuk mengambil courier level 2 atau 3. |
+| Show semua data courier | `GET /api/couriers/{id}` mengembalikan seluruh field melalui `CourierResource`. |
+| Validasi store dan update | Form Request memvalidasi field wajib, format nomor telepon, email, level, status, tanggal, dan keunikan kontak. |
+| Test penyimpanan | Feature test memverifikasi courier tersimpan ke database setelah store dan update. |
+| Test penghapusan | Feature test memverifikasi courier terhapus dari database setelah destroy. |
+| Upload ke GitHub | Repository: https://github.com/Nilfgard13/technical-test-fachrizal |
+
+## Penilaian
+
+- **Pemahaman brief:** seluruh kebutuhan endpoint, pencarian, filter, sorting, pagination, dan validasi diimplementasikan.
+- **Kerapian program:** controller menggunakan Form Request, API Resource, route resource, dan Eloquent model scopes.
+- **Best practices:** validasi dipisahkan dari controller, response memiliki format konsisten, dan parameter sorting dibatasi pada field yang diizinkan.
+- **Dokumentasi dan testing:** README menjelaskan setup serta kontrak API, sementara feature test mencakup alur CRUD dan fitur index utama.

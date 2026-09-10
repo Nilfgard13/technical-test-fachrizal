@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Courier::factory()->agungBudiSantoso()->create();
         Courier::factory()->count(30)->create();
     }
 }
